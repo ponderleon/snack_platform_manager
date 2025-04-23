@@ -1,4 +1,4 @@
-# snack_platform_view
+# snack_platform_manager
 
 ## Project setup
 ```
