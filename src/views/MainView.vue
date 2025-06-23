@@ -36,19 +36,13 @@
 
                 <el-form-item prop="permissionCode">
                   <el-input style="width: 80%;" v-model="manager.permissionCode" type="password"
-                            placeholder="请输入确认密码"/>
+                            placeholder="请输入权限密码"/>
                 </el-form-item>
 
-                <el-row :gutter="10" class="captcha-row">
-                  <el-col :span="16">
-                    <el-form-item prop="verificationCode">
-                      <el-input style="width: 70%;" v-model="manager.verificationCode" placeholder="请输入验证码"/>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="7" class="login-captcha">
-                    <img style="" :src="captchaImage" @click="refreshCode()" alt="验证码"/>
-                  </el-col>
-                </el-row>
+                <el-form-item prop="verificationCode">
+                  <el-input style="width: 40%; margin-left: 2rem" v-model="manager.verificationCode" placeholder="请输入验证码"/>
+                  <img style="width: 100px;height: 40px;margin-right:2.1rem" :src="captchaImage" @click="refreshCode()" alt="验证码"/>
+                </el-form-item>
 
                 <el-form-item class="button-container">
                   <div class="login-button">
@@ -90,8 +84,8 @@ export default {
         password: [
           {required: true, message: '请输入密码', trigger: 'blur'},
           {
-            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{10,}$/,
-            message: '密码必须包含大小写字母和数字，且长度在大于等于10位',
+            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{6,}$/,
+            message: '密码必须包含大小写字母和数字，且长度在大于等于6位',
             trigger: 'blur'
           }],
         permissionCode: [{required: true, message: '请输入权限码', trigger: 'blur'},],
@@ -108,27 +102,26 @@ export default {
     // 自定义验证规则，验证账号是否存在
     validateUsername(rule, value, callback) {
       // 发送请求，验证账号是否存在
-      this.$http.get("/data/manager/verifyUsername", {
+      this.$http.get("/data/snack_platform/manager/verifyUsername", {
         params: {
           username: value
         }
-      }).then(result => {
-        // 数据输出测试
-        // console.log(result)
+      }).then(data => {
+        // console.log("==================",data)
         // 判断账号是否存在
-        if (result.code === 200) {
+        if (data && data.code === 200) {
           // 账号存在
           callback();
         } else {
           // 账号不存在
-          callback(new Error(result.msg));
+          callback(new Error(data.msg));
         }
       })
     },
     /* 刷新验证码 */
     refreshCode() {
       // 从后端获取验证码图片
-      this.$http.get("/data/captcha/getCaptcha").then(result => {
+      this.$http.get("/data/snack_platform/captcha/getCaptcha").then(result => {
         // 判断是否获取到验证码图片
         if (result.image) {
           // 成功获取验证码图片
@@ -145,28 +138,39 @@ export default {
         //  如果验证通过，则提交表单
         if (valid) {
           // 发送登录请求
-          this.$http.post("/data/manager/login", {
-            username: this.manager.username,
-            password: this.manager.password,
-            permissionCode: this.manager.permissionCode,
-            verificationCode: this.manager.verificationCode
-          }).then(result => {
-            // console.log(result.code)
+          this.$http.post("/data/snack_platform/manager/login", this.manager).then(data => {
+
             // 判断是否登录成功
-            if (result.code === 200) {
+            if (data && data.code === 200) {
               // 登录成功，跳转到管理页面
               this.$message({
                 type: "success",
-                message: result.msg
+                message: "登录成功"
               })
-              // goto 跳转到管理页面
+
+              // 设置数据
+              this.$store.dispatch('login', {
+                id: data.data.id,
+                username: data.data.username
+              })
+
+              // 2. 确定重定向路径
+              // 如果有重定向查询参数，则跳转到该路径，否则默认跳转到管理视图
+              const redirectPath = this.$route.query.redirect || '/managerView'
+
+              // 延迟0.5秒后跳转到首页
+              setTimeout(() => {
+                this.$router.push(redirectPath);
+              }, 500);
 
             } else {
               // 登录失败，显示错误信息
               this.$message({
                 type: "error",
-                message: result.msg
+                message: data.msg
               })
+              //  刷新验证码
+              this.refreshCode()
 
             }
 
@@ -184,7 +188,6 @@ export default {
 }
 </script>
 <style>
-
 /* 全局样式 */
 html, body {
   margin: 0;
@@ -193,6 +196,8 @@ html, body {
   width: 100%;
   overflow: hidden; /* 防止滚动条 */
 }
+</style>
+<style scoped>
 
 /* 背景容器 */
 .background-container {
@@ -258,14 +263,27 @@ html, body {
 
 /* 登录表单输入框样式 */
 .login-form-item .el-input {
-  margin: 0 auto;
+  margin: 4px auto;
+}
+
+/* 统一设置输入框高度 */
+:deep(.el-input__inner) {
+  height: 35px; /* 增加输入框高度 */
+
 }
 
 
-/* 验证码图片样式 */
-.login-captcha {
-  margin-left: -1.3rem; /* 左边距 */
-  margin-top: -0.2rem; /* 上边距 */
+
+/* 表单校验错误信息样式 - 保持原有高度，与表单对齐 */
+:deep(.el-form-item__error) {
+  position: absolute; /* 使用绝对定位不占用布局空间 */
+  left: 12%; /* 左边距与输入框对齐 */
+  top: 100%; /* 定位到表单项底部 */
+  text-align: left; /* 错误信息左对齐 */
+  color: #f56c6c; /* 错误信息颜色 */
+  font-size: 15px; /* 错误信息字体大小 */
+  line-height: 1.2; /* 保持紧凑的行高 */
+  width: 70%; /* 与输入框宽度一致 */
 }
 
 
@@ -287,7 +305,7 @@ html, body {
 }
 
 /* 表单验证错误信息样式 */
-.login-form-item .el-form-item__error{
+.login-form-item .el-form-item__error {
   text-align: left; /* 错误信息居中 */
   width: 80%; /* 确保宽度足够 */
   left: 10%; /* 左边距 */
@@ -295,7 +313,7 @@ html, body {
 }
 
 /* 验证码错误信息样式 */
-.captcha-row .el-form-item__error{
+.captcha-row .el-form-item__error {
   left: 15%; /* 左边距 */
 }
 

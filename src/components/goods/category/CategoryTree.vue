@@ -33,56 +33,6 @@
           </template>
         </el-tree>
       </el-col>
-      <!--数据区域 -->
-      <el-col :xs="24" :sm="16" :md="18" :lg="19" :xl="20" class="spu-list">
-        <div class="spu-list-table-container">
-
-          <div class="spu-list-table-header">
-            <!--搜索区域 -->
-            <el-input class="spu-list-table-header-search"  v-model="search" size="small" placeholder="请输入查询条件"/>
-            <!--按钮组 -->
-            <el-button class="spu-list-table-header-button" type="primary" size="small" @click="selectSpu">查询</el-button>
-          </div>
-
-
-          <!--spu商品列表 -->
-          <el-table :data="spuDataList" style="width: 100%" class="spu-list-table">
-            <el-table-column fixed prop="id" label="商品ID" width="100"/>
-            <el-table-column prop="spuName" label="商品名称" width="180"/>
-            <el-table-column prop="merchantUserName" label="所属商家" width="180"/>
-            <el-table-column prop="categoryId" label="所属分类" width="180"/>
-            <el-table-column prop="brandId" label="所属品牌" width="180"/>
-            <el-table-column prop="publicStatus" label="上架状态" width="180"/>
-            <el-table-column prop="createTime" label="创建时间" width="180"/>
-            <el-table-column prop="modifyTime" label="修改时间" width="180"/>
-            <el-table-column fixed="right" label="操作" min-width="120">
-              <template #default>
-                <div class="spu-table-button-group">
-                  <el-button link type="primary" size="small">
-                    修改
-                  </el-button>
-                  <el-button link type="primary" size="small">查看</el-button>
-                </div>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-        <!--分页区域 -->
-        <div class="spu-list-pagination">
-          <el-pagination
-
-              @size-change="sizeChangeHandle"
-              @current-change="currentChangeHandle"
-              :current-page="currentPage"
-              :page-sizes="[5, 10, 15, 20]"
-              :page-size="pageSize"
-              :total="totalPage"
-              layout="total, sizes, prev, pager, next, jumper"
-          ></el-pagination>
-        </div>
-      </el-col>
-
-
     </el-row>
   </div>
 </template>
@@ -97,71 +47,6 @@ export default {
         label: 'name', // 节点标签字段名
         children: 'childrenCategories' // 子节点字段名
       },
-      totalPage: 100, // 总页数
-      currentPage: 1, // 当前页数
-      pageSize: 10, // 每页显示条数
-      spuDataList: [
-        {
-          id: 1,
-          spuName: 'SPU商品展示',
-          merchantUserName: '商家',
-          categoryId: '分类',
-          brandId: '品牌',
-          publicStatus: '发布状态',
-          createTime: new Date(),
-          modifyTime: new Date(),
-        },
-        {
-          id: 1,
-          spuName: 'SPU商品展示',
-          merchantUserName: '商家',
-          categoryId: '分类',
-          brandId: '品牌',
-          publicStatus: '发布状态',
-          createTime: new Date(),
-          modifyTime: new Date(),
-        },
-        {
-          id: 1,
-          spuName: 'SPU商品展示',
-          merchantUserName: '商家',
-          categoryId: '分类',
-          brandId: '品牌',
-          publicStatus: '发布状态',
-          createTime: new Date(),
-          modifyTime: new Date(),
-        },
-        {
-          id: 1,
-          spuName: 'SPU商品展示',
-          merchantUserName: '商家',
-          categoryId: '分类',
-          brandId: '品牌',
-          publicStatus: '发布状态',
-          createTime: new Date(),
-          modifyTime: new Date(),
-        },
-        {
-          id: 1,
-          spuName: 'SPU商品展示',
-          merchantUserName: '商家',
-          categoryId: '分类',
-          brandId: '品牌',
-          publicStatus: '发布状态',
-          createTime: new Date(),
-          modifyTime: new Date(),
-        },
-        {
-          id: 1,
-          spuName: 'SPU商品展示',
-          merchantUserName: '商家',
-          categoryId: '分类',
-          brandId: '品牌',
-          publicStatus: '发布状态',
-          createTime: new Date(),
-          modifyTime: new Date(),
-        },
-      ] // 商品列表数据
     }
   },
   created() {
@@ -170,7 +55,7 @@ export default {
   methods: {
     // 获取分类树形数据
     getCategoriesTreeData() {
-      this.$http.get('/data/category/tree').then(result => {
+      this.$http.get('/data/snack_platform/category/tree').then(result => {
 
         // console.log("================",result.data.categoriesTree)
         // 判断是否有查询到分类数据

@@ -1,7 +1,7 @@
 <template>
-  <!-- 用户信息修改对话框 -->
+  <!-- 商户信息修改对话框 -->
   <el-dialog
-      title="修改用户信息"
+      title="修改商户信息"
       :close-on-click-modal="false"
       v-model="visible"
       :width="dialogWidth"
@@ -11,45 +11,32 @@
     <div class="dialog-center-container">
       <!-- 对话框内容容器 - 用于居中表单 -->
       <div class="dialog-content-wrapper">
-        <!-- 用户信息表单 -->
+        <!-- 商户信息表单 -->
         <el-form :model="dataForm" :rules="dataRule" ref="dataFormRef" @keyup.enter.native="dataFormSubmit()"
                  :label-width="formLabelWidth" class="compact-form">
-          <!-- 用户名称 - 可编辑 -->
-          <el-form-item label="名称" prop="name">
-            <el-input v-model="dataForm.name" placeholder="名称"></el-input>
+          <!-- 商户名称 - 可编辑 -->
+          <el-form-item label="商户名称" prop="name">
+            <el-input v-model="dataForm.name" placeholder="商户名称"></el-input>
           </el-form-item>
 
-          <!-- 用户账号 - 可编辑 -->
-          <el-form-item label="用户账号" prop="username">
-            <el-input v-model="dataForm.username" placeholder="用户账号"></el-input>
+          <!-- 商户账号 - 可编辑 -->
+          <el-form-item label="商户账号" prop="username">
+            <el-input v-model="dataForm.username" placeholder="商户账号"></el-input>
           </el-form-item>
 
-          <!-- 用户电话 - 可编辑 -->
-          <el-form-item label="用户电话" prop="phone">
-            <el-input v-model="dataForm.phone" placeholder="用户电话"></el-input>
+          <!-- 商户电话 - 可编辑 -->
+          <el-form-item label="商户电话" prop="phone">
+            <el-input v-model="dataForm.phone" placeholder="商户电话"></el-input>
           </el-form-item>
 
-          <!-- 用户邮箱 - 可编辑 -->
-          <el-form-item label="用户邮箱" prop="email">
-            <el-input v-model="dataForm.email" placeholder="用户邮箱"></el-input>
+          <!-- 商户邮箱 - 可编辑 -->
+          <el-form-item label="商户邮箱" prop="email">
+            <el-input v-model="dataForm.email" placeholder="商户邮箱"></el-input>
           </el-form-item>
 
-          <!-- 用户住址 - 可编辑 -->
-          <el-form-item label="住址" prop="address">
-            <el-input v-model="dataForm.address" placeholder="住址"></el-input>
-          </el-form-item>
-
-          <!-- 配送员状态 - 可编辑 -->
-          <el-form-item label="配送员" prop="delivery">
-            <el-select v-model="dataForm.delivery" placeholder="请选择">
-              <el-option :value="1" label="是"></el-option>
-              <el-option :value="0" label="否"></el-option>
-            </el-select>
-          </el-form-item>
-
-          <!-- 权限设置 - 可编辑 -->
-          <el-form-item label="权限" prop="permission">
-            <el-input v-model.number="dataForm.permission" placeholder="请输入权限值" class="short-input"></el-input>
+          <!-- 商户地址 - 可编辑 -->
+          <el-form-item label="商户地址" prop="address">
+            <el-input v-model="dataForm.address" placeholder="商户地址"></el-input>
           </el-form-item>
 
           <!-- 是否启用开关 - 可编辑 -->
@@ -89,15 +76,6 @@ export default {
       }
     };
 
-    // 自定义验证器：验证delivery只能是0或1
-    const validateDelivery = (rule, value, callback) => {
-      if (value !== 0 && value !== 1) {
-        callback(new Error('配送员状态只能是0或1'));
-      } else {
-        callback();
-      }
-    };
-
     return {
       // 控制对话框显示/隐藏
       visible: false,
@@ -105,42 +83,32 @@ export default {
       // 添加窗口宽度跟踪
       windowWidth: window.innerWidth,
 
-      // 用户数据表单对象
+      // 商户数据表单对象
       dataForm: {
-        id: 0,            // 用户ID
-        name: '',         // 用户名称
-        username: '',     // 用户账号
-        phone: '',        // 用户电话
-        email: '',        // 用户邮箱
-        address: '',      // 用户住址
-        delivery: 0,      // 是否是配送员 (0:否, 1:是)
-        permission: 0,    // 用户权限 (数值输入)
+        id: 0,            // 商户ID
+        name: '',         // 商户名称
+        username: '',     // 商户账号
+        password: '',     // 商户密码
+        phone: '',        // 商户电话
+        email: '',        // 商户邮箱
+        address: '',      // 商户地址
         isUse: 1          // 是否启用 (0:未启用, 1:启用)
       },
 
       // 表单验证规则 - 验证所有字段
       dataRule: {
         name: [
-          { required: true, message: '名称不能为空', trigger: 'change' }
+          { required: true, message: '商户名称不能为空', trigger: 'change' }
         ],
         username: [
-          { required: true, message: '用户账号不能为空', trigger: 'blur' }
+          { required: true, message: '商户账号不能为空', trigger: 'blur' }
         ],
         phone: [
-          { required: true, message: '电话不能为空', trigger: 'blur' },
-          // { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号码', trigger: 'blur' }
+          { required: true, message: '电话不能为空', trigger: 'blur' }
         ],
         email: [
           { required: true, message: '邮箱不能为空', trigger: 'blur' },
           { validator: validateEmail, trigger: 'blur' }
-        ],
-        delivery: [
-          { required: true, message: '配送员状态不能为空', trigger: 'change' },
-          { validator: validateDelivery, trigger: 'change' }
-        ],
-        permission: [
-          { required: true, message: '权限不能为空', trigger: 'blur' },
-          { type: 'number', message: '权限必须为数字', trigger: 'blur' }
         ],
         isUse: [
           { required: true, message: '启用状态不能为空', trigger: 'change' }
@@ -181,10 +149,11 @@ export default {
 
     /**
      * 初始化对话框
-     * @param {Number} id - 用户ID
+     * @param {Number} id - 商户ID
      */
     init(id) {
-      // 设置用户ID并显示对话框
+      console.log("============================",id)
+      // 设置商户ID并显示对话框
       this.dataForm.id = id || 0
       this.visible = true
 
@@ -193,13 +162,12 @@ export default {
         // 重置表单数据
         this.resetForm()
 
-        // 如果有ID，则获取用户信息
+        // 如果有ID，则获取商户信息
         if (this.dataForm.id) {
-          // 发送请求获取用户详细信息
-          this.$http.get(`/data/snack_platform/user/info/${this.dataForm.id}`).then((data) => {
+          // 发送请求获取商户详细信息
+          this.$http.get(`/data/snack_platform/merchant/info/${this.dataForm.id}`).then((data) => {
             if (data && data.code === 200) {
-              console.log("===========================", data)
-              this.dataForm = data.data.user; // 填充表单数据
+              this.dataForm = data.data.merchant
             }
           })
         }
@@ -215,11 +183,10 @@ export default {
         id: this.dataForm.id,
         name: '',
         username: '',
+        password: '',
         phone: '',
         email: '',
         address: '',
-        delivery: 0,
-        permission: 0,
         isUse: 1
       }
 
@@ -244,7 +211,7 @@ export default {
       // 验证表单
       formRef.validate((valid) => {
         if (valid) {
-          // 提交所有字段（因为现在所有字段都可编辑）
+          // 准备提交数据
           const updateData = {
             id: this.dataForm.id,
             name: this.dataForm.name,
@@ -252,13 +219,16 @@ export default {
             phone: this.dataForm.phone,
             email: this.dataForm.email,
             address: this.dataForm.address,
-            delivery: this.dataForm.delivery,
-            permission: this.dataForm.permission,
             isUse: this.dataForm.isUse
           }
 
+          // 如果密码字段不为空，则包含在更新数据中
+          if (this.dataForm.password) {
+            updateData.password = this.dataForm.password;
+          }
+
           // 发送更新请求
-          this.$http.put('/data/snack_platform/user/update', updateData).then((data) => {
+          this.$http.put('/data/snack_platform/merchant/update', updateData).then((data) => {
             if (data && data.code === 200) {
               // 更新成功提示
               this.$message({
@@ -273,7 +243,7 @@ export default {
               })
             } else {
               // 更新失败提示
-              this.$message.error(data?.msg || '操作失败')
+              this.$message.error(response.data?.msg || '操作失败')
             }
           })
         }

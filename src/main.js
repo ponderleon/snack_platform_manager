@@ -11,6 +11,9 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 // 注册全局组件
 import http from './utils/request'
 
+// 初始化认证状态
+store.dispatch('initializeAuth')
+
 const app = createApp(App)
     app.use(store);
     app.use(router);

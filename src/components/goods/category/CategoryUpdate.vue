@@ -1,7 +1,7 @@
 <template>
-  <!-- 用户信息修改对话框 -->
+  <!-- 分类信息修改对话框 -->
   <el-dialog
-      title="修改用户信息"
+      title="修改分类"
       :close-on-click-modal="false"
       v-model="visible"
       :width="dialogWidth"
@@ -11,55 +11,48 @@
     <div class="dialog-center-container">
       <!-- 对话框内容容器 - 用于居中表单 -->
       <div class="dialog-content-wrapper">
-        <!-- 用户信息表单 -->
+        <!-- 分类信息表单 -->
         <el-form :model="dataForm" :rules="dataRule" ref="dataFormRef" @keyup.enter.native="dataFormSubmit()"
                  :label-width="formLabelWidth" class="compact-form">
-          <!-- 用户名称 - 可编辑 -->
-          <el-form-item label="名称" prop="name">
-            <el-input v-model="dataForm.name" placeholder="名称"></el-input>
+          <!-- 分类名称 -->
+          <el-form-item label="分类名称" prop="name">
+            <el-input v-model="dataForm.name" placeholder="请输入分类名称"></el-input>
           </el-form-item>
 
-          <!-- 用户账号 - 可编辑 -->
-          <el-form-item label="用户账号" prop="username">
-            <el-input v-model="dataForm.username" placeholder="用户账号"></el-input>
+          <!-- 父分类信息（不可编辑，仅显示） -->
+          <el-form-item v-if="parentInfo.name" label="父分类" prop="parentName">
+            <el-input v-model="parentInfo.name" disabled></el-input>
           </el-form-item>
 
-          <!-- 用户电话 - 可编辑 -->
-          <el-form-item label="用户电话" prop="phone">
-            <el-input v-model="dataForm.phone" placeholder="用户电话"></el-input>
+          <!-- 分类层级 -->
+          <el-form-item label="分类层级" prop="categoryLevel">
+            <el-input v-model="dataForm.categoryLevel" disabled></el-input>
           </el-form-item>
 
-          <!-- 用户邮箱 - 可编辑 -->
-          <el-form-item label="用户邮箱" prop="email">
-            <el-input v-model="dataForm.email" placeholder="用户邮箱"></el-input>
-          </el-form-item>
-
-          <!-- 用户住址 - 可编辑 -->
-          <el-form-item label="住址" prop="address">
-            <el-input v-model="dataForm.address" placeholder="住址"></el-input>
-          </el-form-item>
-
-          <!-- 配送员状态 - 可编辑 -->
-          <el-form-item label="配送员" prop="delivery">
-            <el-select v-model="dataForm.delivery" placeholder="请选择">
-              <el-option :value="1" label="是"></el-option>
-              <el-option :value="0" label="否"></el-option>
-            </el-select>
-          </el-form-item>
-
-          <!-- 权限设置 - 可编辑 -->
-          <el-form-item label="权限" prop="permission">
-            <el-input v-model.number="dataForm.permission" placeholder="请输入权限值" class="short-input"></el-input>
-          </el-form-item>
-
-          <!-- 是否启用开关 - 可编辑 -->
-          <el-form-item label="是否启用" prop="isUse">
+          <!-- 是否显示 - 仅当修改三级分类时可选择 -->
+          <el-form-item label="是否显示" prop="isShow">
             <el-switch
-                v-model="dataForm.isUse"
+                v-model="dataForm.isShow"
+                :disabled="dataForm.categoryLevel < 3"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 :active-value="1"
-                :inactive-value="0"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949">
+                :inactive-value="0">
             </el-switch>
+          </el-form-item>
+
+          <!-- 排序 -->
+          <el-form-item label="排序" prop="sort">
+            <el-input-number v-model="dataForm.sort" :min="0" :max="999" placeholder="请输入排序值"></el-input-number>
+          </el-form-item>
+
+          <!-- 图标 -->
+          <el-form-item label="图标" prop="icon">
+            <el-input v-model="dataForm.icon" placeholder="请输入图标"></el-input>
+          </el-form-item>
+
+          <!-- 统计单位 -->
+          <el-form-item label="统计单位" prop="productUnit">
+            <el-input v-model="dataForm.productUnit" placeholder="请输入统计单位"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -79,71 +72,46 @@
 <script>
 export default {
   data() {
-    // 自定义验证器：验证邮箱格式
-    const validateEmail = (rule, value, callback) => {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (value && !emailRegex.test(value)) {
-        callback(new Error('请输入有效的邮箱地址'));
-      } else {
-        callback();
-      }
-    };
-
-    // 自定义验证器：验证delivery只能是0或1
-    const validateDelivery = (rule, value, callback) => {
-      if (value !== 0 && value !== 1) {
-        callback(new Error('配送员状态只能是0或1'));
-      } else {
-        callback();
-      }
-    };
-
     return {
       // 控制对话框显示/隐藏
       visible: false,
 
+      // 父分类信息
+      parentInfo: {
+        id: 0,
+        name: '',
+        level: 0
+      },
+
       // 添加窗口宽度跟踪
       windowWidth: window.innerWidth,
 
-      // 用户数据表单对象
+      // 分类数据表单对象
       dataForm: {
-        id: 0,            // 用户ID
-        name: '',         // 用户名称
-        username: '',     // 用户账号
-        phone: '',        // 用户电话
-        email: '',        // 用户邮箱
-        address: '',      // 用户住址
-        delivery: 0,      // 是否是配送员 (0:否, 1:是)
-        permission: 0,    // 用户权限 (数值输入)
-        isUse: 1          // 是否启用 (0:未启用, 1:启用)
+        id: 0,            // 分类ID
+        name: '',         // 分类名称
+        parentId: 0,      // 父分类ID
+        categoryLevel: 1, // 分类层级
+        isShow: 1,        // 是否显示
+        sort: 0,          // 排序
+        icon: '',         // 图标
+        productUnit: ''   // 统计单位
       },
 
-      // 表单验证规则 - 验证所有字段
+      // 表单验证规则
       dataRule: {
         name: [
-          { required: true, message: '名称不能为空', trigger: 'change' }
+          { required: true, message: '分类名称不能为空', trigger: 'blur' }
         ],
-        username: [
-          { required: true, message: '用户账号不能为空', trigger: 'blur' }
+        sort: [
+          { required: true, message: '排序值不能为空', trigger: 'blur' },
+          { type: 'number', message: '排序值必须为数字', trigger: 'blur' }
         ],
-        phone: [
-          { required: true, message: '电话不能为空', trigger: 'blur' },
-          // { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号码', trigger: 'blur' }
+        icon: [
+          { required: false, message: '图标', trigger: 'blur' }
         ],
-        email: [
-          { required: true, message: '邮箱不能为空', trigger: 'blur' },
-          { validator: validateEmail, trigger: 'blur' }
-        ],
-        delivery: [
-          { required: true, message: '配送员状态不能为空', trigger: 'change' },
-          { validator: validateDelivery, trigger: 'change' }
-        ],
-        permission: [
-          { required: true, message: '权限不能为空', trigger: 'blur' },
-          { type: 'number', message: '权限必须为数字', trigger: 'blur' }
-        ],
-        isUse: [
-          { required: true, message: '启用状态不能为空', trigger: 'change' }
+        productUnit: [
+          { required: false, message: '统计单位', trigger: 'blur' }
         ]
       }
     }
@@ -180,29 +148,75 @@ export default {
     },
 
     /**
-     * 初始化对话框
-     * @param {Number} id - 用户ID
+     * 初始化修改对话框
+     * @param {Number} id - 要修改的分类ID
      */
     init(id) {
-      // 设置用户ID并显示对话框
-      this.dataForm.id = id || 0
-      this.visible = true
+      if (!id) {
+        this.$message.error('未指定要修改的分类ID');
+        return;
+      }
+
+      // 设置分类ID并显示对话框
+      this.dataForm.id = id;
+      this.visible = true;
 
       // 使用nextTick等待DOM更新后再加载数据
       this.$nextTick(() => {
         // 重置表单数据
-        this.resetForm()
+        this.resetForm();
 
-        // 如果有ID，则获取用户信息
-        if (this.dataForm.id) {
-          // 发送请求获取用户详细信息
-          this.$http.get(`/data/snack_platform/user/info/${this.dataForm.id}`).then((data) => {
-            if (data && data.code === 200) {
-              console.log("===========================", data)
-              this.dataForm = data.data.user; // 填充表单数据
-            }
-          })
+        // 加载分类详细信息
+        this.loadCategoryInfo(id);
+      });
+    },
+
+    /**
+     * 加载分类详细信息
+     * @param {Number} id - 分类ID
+     */
+    loadCategoryInfo(id) {
+      this.$http.get(`/data/snack_platform/category/info/${id}`).then((data) => {
+        if (data && data.code === 200) {
+          // 填充表单数据
+          this.dataForm.id = data.data.id;
+          this.dataForm.name = data.data.name;
+          this.dataForm.parentId = data.data.parentId;
+          this.dataForm.categoryLevel = data.data.categoryLevel;
+          this.dataForm.isShow = data.data.isShow;
+          this.dataForm.sort = data.data.sort;
+          this.dataForm.icon = data.data.icon;
+          this.dataForm.productUnit = data.data.productUnit;
+
+          // 如果有父分类，加载父分类信息
+          if (this.dataForm.parentId > 0) {
+            this.loadParentCategoryInfo(this.dataForm.parentId);
+          }
+        } else {
+          this.$message.error(data?.msg || '获取分类信息失败');
         }
+      }).catch(error => {
+        console.error('获取分类信息失败:', error);
+        this.$message.error('获取分类信息失败');
+      });
+    },
+
+    /**
+     * 加载父分类信息
+     * @param {Number} parentId - 父分类ID
+     */
+    loadParentCategoryInfo(parentId) {
+      this.$http.get(`/data/snack_platform/category/info/${parentId}`).then((data) => {
+        if (data && data.code === 200) {
+          // 设置父分类信息
+          this.parentInfo = {
+            id: data.data.id,
+            name: data.data.name,
+            level: data.data.categoryLevel
+          };
+        }
+      }).catch(error => {
+        console.error('获取父分类信息失败:', error);
       });
     },
 
@@ -210,18 +224,23 @@ export default {
      * 重置表单数据为默认值
      */
     resetForm() {
-      // 手动重置表单数据，保留ID
+      // 记住原来的ID
+      const originalId = this.dataForm.id;
+
+      // 重置表单数据，保留ID
       this.dataForm = {
-        id: this.dataForm.id,
+        id: originalId,
         name: '',
-        username: '',
-        phone: '',
-        email: '',
-        address: '',
-        delivery: 0,
-        permission: 0,
-        isUse: 1
-      }
+        parentId: 0,
+        categoryLevel: 1,
+        isShow: 1,
+        sort: 0,
+        icon: '',
+        productUnit: ''
+      };
+
+      // 清空父分类信息
+      this.parentInfo = { id: 0, name: '', level: 0 };
 
       // 如果表单引用存在，重置表单验证状态
       if (this.$refs.dataFormRef) {
@@ -244,25 +263,12 @@ export default {
       // 验证表单
       formRef.validate((valid) => {
         if (valid) {
-          // 提交所有字段（因为现在所有字段都可编辑）
-          const updateData = {
-            id: this.dataForm.id,
-            name: this.dataForm.name,
-            username: this.dataForm.username,
-            phone: this.dataForm.phone,
-            email: this.dataForm.email,
-            address: this.dataForm.address,
-            delivery: this.dataForm.delivery,
-            permission: this.dataForm.permission,
-            isUse: this.dataForm.isUse
-          }
-
           // 发送更新请求
-          this.$http.put('/data/snack_platform/user/update', updateData).then((data) => {
+          this.$http.put('/data/snack_platform/category/update',this.dataForm).then((data) => {
             if (data && data.code === 200) {
-              // 更新成功提示
+              // 操作成功提示
               this.$message({
-                message: '操作成功',
+                message: '修改成功',
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
@@ -272,10 +278,13 @@ export default {
                 }
               })
             } else {
-              // 更新失败提示
-              this.$message.error(data?.msg || '操作失败')
+              // 操作失败提示
+              this.$message.error(data?.msg || '修改失败')
             }
-          })
+          }).catch(error => {
+            console.error('修改失败:', error);
+            this.$message.error('修改失败');
+          });
         }
       })
     }
@@ -289,7 +298,7 @@ export default {
   margin: 0 auto;       /* 水平居中对话框 */
 }
 
-/* 新增：外层居中容器 - 确保内部元素可靠地居中 */
+/* 外层居中容器 - 确保内部元素可靠地居中 */
 .dialog-center-container {
   width: 100%;
   display: flex;
@@ -310,19 +319,16 @@ export default {
 
 /* 紧凑型表单样式 - 控制表单大小并使其居中 */
 .compact-form {
-  width: 70%;           /* 将表单宽度设为70%，减少约三分之一 */
+  width: 80%;           /* 将表单宽度设为80%，稍微宽一些以容纳更多内容 */
   margin: 0 auto;       /* 水平居中 */
 }
 
 /* 控制输入框和下拉框宽度 - 使所有输入控件保持一致宽度 */
 .compact-form .el-input,
-.compact-form .el-select {
+.compact-form .el-select,
+.compact-form .el-input-number,
+.compact-form .el-switch {
   width: 100% !important; /* 强制应用宽度100% */
-}
-
-/* 特定短输入框样式 - 权限输入框专用小尺寸 */
-.short-input {
-  max-width: 6.25rem !important; /* 减小权限输入框宽度 */
 }
 
 /* 减小表单项间距 - 为错误提示留出适当空间但不过宽 */
@@ -376,7 +382,7 @@ export default {
 /* 自适应媒体查询 - 针对不同屏幕尺寸优化布局 */
 @media screen and (max-width: 768px) {
   .compact-form {
-    width: 85%;         /* 在中小屏幕上稍微加宽表单 */
+    width: 90%;         /* 在中小屏幕上稍微加宽表单 */
   }
 
   .el-form-item {

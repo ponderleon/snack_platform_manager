@@ -7,10 +7,10 @@
 <template>
   <div class="manager-navigation">
     <el-menu
-        active-text-color="#ffd04b"
-        background-color="#545c64"
+        active-text-color="#fffff"
+        background-color="#E1C699"
+        text-color="#5F3C1E"
         class="el-menu-vertical-demo"
-        text-color="#fff"
         @open="handleOpen"
         @close="handleClose"
     >
@@ -52,6 +52,7 @@
 
       </el-sub-menu>
 
+
       <el-sub-menu index="2">
         <template #title>
           <el-icon>
@@ -64,22 +65,29 @@
           <el-icon>
             <icon-menu/>
           </el-icon>
-          <span>商家</span>
+          <nav>
+            <router-link :to="{ name: 'ManagerMerchant'}" class="router-link">
+              <span>商家</span>
+            </router-link>
+          </nav>
+
         </el-menu-item>
         <el-menu-item index="2-2">
           <el-icon>
             <icon-menu/>
           </el-icon>
-          <router-link :to="{ name: 'ManagerUser' }" class="router-link">
-            <span>配送员</span>
-          </router-link>
+          <nav>
+            <router-link :to="{ name: 'ManagerUser', query: { delivery: 1 }  }" class="router-link">
+              <span>配送员</span>
+            </router-link>
+          </nav>
         </el-menu-item>
         <el-menu-item index="2-3">
           <el-icon>
             <icon-menu/>
           </el-icon>
           <nav>
-            <router-link :to="{ name: 'ManagerUser' }" class="router-link">
+            <router-link :to="{ name: 'ManagerUser', query: { delivery: 0 } }" class="router-link">
               <span>普通用户</span>
             </router-link>
           </nav>
@@ -91,38 +99,85 @@
           <el-icon>
             <location/>
           </el-icon>
-          <span>商品管理</span>
+          <span>产品管理</span>
         </template>
 
+<!--        <el-menu-item index="3-1">-->
+<!--          <el-icon>-->
+<!--            <icon-menu/>-->
+<!--          </el-icon>-->
+<!--          <nav>-->
+<!--            <router-link :to="{ name: 'GoodsEnterView' }" class="router-link">-->
+<!--              <span>添加产品</span>-->
+<!--            </router-link>-->
+<!--          </nav>-->
+<!--        </el-menu-item>-->
 
-        <el-menu-item index="3-1">
-          <el-icon>
-            <icon-menu/>
-          </el-icon>
-          <router-link to="/managerView/goodsAndCategoriesTree" class="router-link">
-            <span>未上架商品</span>
-          </router-link>
-        </el-menu-item>
-        <el-menu-item index="3-2">
-          <el-icon>
-            <icon-menu/>
-          </el-icon>
-          <router-link to="/managerView/goodsAndCategoriesTree" class="router-link">
-            <span>已上架商品</span>
-          </router-link>
+        <el-sub-menu index="3-2">
+          <template #title>
+            <el-icon>
+              <location/>
+            </el-icon>
+            <span>产品</span>
+          </template>
+          <el-menu-item index="3-2-1">
+            <el-icon>
+              <icon-menu/>
+            </el-icon>
+            <nav>
+              <router-link :to="{ name: 'SpuInfo', query: { publicStatus: 0 } }" class="router-link">
+                <span>新建产品</span>
+              </router-link>
+            </nav>
 
-        </el-menu-item>
-        <el-menu-item index="3-3">
-          <el-icon>
-            <icon-menu/>
-          </el-icon>
-          <router-link to="/managerView/goodsAndCategoriesTree" class="router-link">
-            <span>已下架商品</span>
-          </router-link>
-        </el-menu-item>
+          </el-menu-item>
+          <el-menu-item index="3-2-2">
+            <el-icon>
+              <icon-menu/>
+            </el-icon>
+            <nav>
+              <router-link :to="{ name: 'SpuInfo', query: { publicStatus: 1 } }" class="router-link">
+                <span>上架产品</span>
+              </router-link>
+            </nav>
+
+          </el-menu-item>
+          <el-menu-item index="3-2-3">
+            <el-icon>
+              <icon-menu/>
+            </el-icon>
+            <nav>
+              <router-link :to="{ name: 'SpuInfo', query: { publicStatus: 2 } }" class="router-link">
+                <span>下架产品</span>
+              </router-link>
+            </nav>
+
+          </el-menu-item>
+        </el-sub-menu>
       </el-sub-menu>
 
       <el-sub-menu index="4">
+        <template #title>
+          <el-icon>
+            <location/>
+          </el-icon>
+          <span>商品管理</span>
+        </template>
+
+        <el-menu-item index="4-1">
+          <el-icon>
+            <icon-menu/>
+          </el-icon>
+          <nav>
+            <router-link :to="{ name: 'SkuInfo' }" class="router-link">
+              <span>商品</span>
+            </router-link>
+          </nav>
+        </el-menu-item>
+
+      </el-sub-menu>
+
+      <el-sub-menu index="5">
         <template #title>
           <el-icon>
             <location/>
@@ -131,38 +186,73 @@
         </template>
 
 
-        <el-menu-item index="4-1">
+        <el-menu-item index="5-1">
           <el-icon>
             <icon-menu/>
           </el-icon>
-          <span>商品信息组</span>
+          <nav>
+            <router-link :to="{ name: 'AttributeGroup' }" class="router-link">
+              <span>商品信息组</span>
+            </router-link>
+          </nav>
         </el-menu-item>
-        <el-sub-menu index="4-2">
+        <el-sub-menu index="5-2">
           <template #title>
             <el-icon>
               <icon-menu/>
             </el-icon>
             <span>商品信息</span>
           </template>
-          <el-menu-item index="4-2-1">
+          <el-menu-item index="5-2-1">
             <el-icon>
               <icon-menu/>
             </el-icon>
-            <span>基本信息</span>
+            <nav>
+              <router-link :to="{ name: 'Attribute', query: { type: 0 } }" class="router-link">
+                <span>基本信息</span>
+              </router-link>
+            </nav>
+
           </el-menu-item>
 
-          <el-menu-item index="4-2-2">
+          <el-menu-item index="5-2-2">
             <el-icon>
               <icon-menu/>
             </el-icon>
-            <span>销售信息</span>
+            <nav>
+              <router-link :to="{ name: 'Attribute', query: { type: 1 } }" class="router-link">
+                <span>销售信息</span>
+              </router-link>
+            </nav>
+
           </el-menu-item>
 
         </el-sub-menu>
+        <el-menu-item index="5-3">
+          <el-icon>
+            <icon-menu/>
+          </el-icon>
+          <nav>
+            <router-link :to="{ name: 'Brand' }" class="router-link">
+              <span>品牌管理</span>
+            </router-link>
+          </nav>
+        </el-menu-item>
+
+        <el-menu-item index="5-4">
+          <el-icon>
+            <icon-menu/>
+          </el-icon>
+          <nav>
+            <router-link :to="{ name: 'CategoryManager' }" class="router-link">
+              <span>分类管理</span>
+            </router-link>
+          </nav>
+        </el-menu-item>
       </el-sub-menu>
 
 
-      <el-sub-menu index="5">
+      <el-sub-menu index="6">
         <template #title>
           <el-icon>
             <location/>
@@ -170,23 +260,41 @@
           <span>订单管理</span>
         </template>
 
-        <el-menu-item index="5-1">
-          <el-icon>
-            <icon-menu/>
-          </el-icon>
-          <span>待发货订单</span>
+        <el-menu-item index="6-1">
+          <template #title>
+            <el-icon>
+              <location/>
+            </el-icon>
+            <nav>
+              <router-link :to="{ name: 'Order',query: { status: 0 } }" class="router-link">
+                <span>待发货订单</span>
+              </router-link>
+            </nav>
+          </template>
         </el-menu-item>
-        <el-menu-item index="5-2">
-          <el-icon>
-            <icon-menu/>
-          </el-icon>
-          <span>待收货订单</span>
+        <el-menu-item index="6-2">
+          <template #title>
+            <el-icon>
+              <location/>
+            </el-icon>
+            <nav>
+              <router-link :to="{ name: 'Order' ,query: { status: 1 }}" class="router-link">
+                <span>待收货订单</span>
+              </router-link>
+            </nav>
+          </template>
         </el-menu-item>
-        <el-menu-item index="5-3">
-          <el-icon>
-            <icon-menu/>
-          </el-icon>
-          <span>已完成订单</span>
+        <el-menu-item index="6-3">
+          <template #title>
+            <el-icon>
+              <location/>
+            </el-icon>
+            <nav>
+              <router-link :to="{ name: 'Order' ,query: { status: 2 }}" class="router-link">
+                <span>完成订单</span>
+              </router-link>
+            </nav>
+          </template>
         </el-menu-item>
       </el-sub-menu>
 
@@ -200,7 +308,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /* 导航栏样式 */
 .manager-navigation {
   height: calc(100vh - 10vh); /* 减去头部高度 */

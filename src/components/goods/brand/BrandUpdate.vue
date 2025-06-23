@@ -1,7 +1,7 @@
 <template>
-  <!-- 用户信息修改对话框 -->
+  <!-- 品牌信息修改对话框 -->
   <el-dialog
-      title="修改用户信息"
+      title="修改品牌"
       :close-on-click-modal="false"
       v-model="visible"
       :width="dialogWidth"
@@ -11,55 +11,42 @@
     <div class="dialog-center-container">
       <!-- 对话框内容容器 - 用于居中表单 -->
       <div class="dialog-content-wrapper">
-        <!-- 用户信息表单 -->
+        <!-- 品牌信息表单 -->
         <el-form :model="dataForm" :rules="dataRule" ref="dataFormRef" @keyup.enter.native="dataFormSubmit()"
                  :label-width="formLabelWidth" class="compact-form">
-          <!-- 用户名称 - 可编辑 -->
-          <el-form-item label="名称" prop="name">
-            <el-input v-model="dataForm.name" placeholder="名称"></el-input>
+          <!-- 品牌名称 -->
+          <el-form-item label="品牌名称" prop="name">
+            <el-input v-model="dataForm.name" placeholder="请输入品牌名称"></el-input>
           </el-form-item>
 
-          <!-- 用户账号 - 可编辑 -->
-          <el-form-item label="用户账号" prop="username">
-            <el-input v-model="dataForm.username" placeholder="用户账号"></el-input>
+          <!-- 品牌Logo -->
+          <el-form-item label="品牌Logo" prop="log">
+            <el-input v-model="dataForm.log" placeholder="请输入品牌Logo URL"></el-input>
           </el-form-item>
 
-          <!-- 用户电话 - 可编辑 -->
-          <el-form-item label="用户电话" prop="phone">
-            <el-input v-model="dataForm.phone" placeholder="用户电话"></el-input>
+          <!-- 品牌说明 -->
+          <el-form-item label="品牌说明" prop="description">
+            <el-input v-model="dataForm.description" placeholder="请输入品牌说明" type="textarea" :rows="3"></el-input>
           </el-form-item>
 
-          <!-- 用户邮箱 - 可编辑 -->
-          <el-form-item label="用户邮箱" prop="email">
-            <el-input v-model="dataForm.email" placeholder="用户邮箱"></el-input>
-          </el-form-item>
-
-          <!-- 用户住址 - 可编辑 -->
-          <el-form-item label="住址" prop="address">
-            <el-input v-model="dataForm.address" placeholder="住址"></el-input>
-          </el-form-item>
-
-          <!-- 配送员状态 - 可编辑 -->
-          <el-form-item label="配送员" prop="delivery">
-            <el-select v-model="dataForm.delivery" placeholder="请选择">
-              <el-option :value="1" label="是"></el-option>
-              <el-option :value="0" label="否"></el-option>
-            </el-select>
-          </el-form-item>
-
-          <!-- 权限设置 - 可编辑 -->
-          <el-form-item label="权限" prop="permission">
-            <el-input v-model.number="dataForm.permission" placeholder="请输入权限值" class="short-input"></el-input>
-          </el-form-item>
-
-          <!-- 是否启用开关 - 可编辑 -->
-          <el-form-item label="是否启用" prop="isUse">
+          <!-- 是否发布 - 使用开关组件 -->
+          <el-form-item label="是否发布" prop="isRelease">
             <el-switch
-                v-model="dataForm.isUse"
+                v-model="dataForm.isRelease"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 :active-value="1"
-                :inactive-value="0"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949">
+                :inactive-value="0">
             </el-switch>
+          </el-form-item>
+
+          <!-- 检索首字母 -->
+          <el-form-item label="检索首字母" prop="firstLetter">
+            <el-input v-model="dataForm.firstLetter" placeholder="请输入检索首字母（大写）"></el-input>
+          </el-form-item>
+
+          <!-- 排序 -->
+          <el-form-item label="排序" prop="sort">
+            <el-input v-model.number="dataForm.sort" placeholder="请输入排序值（数字）"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -79,25 +66,6 @@
 <script>
 export default {
   data() {
-    // 自定义验证器：验证邮箱格式
-    const validateEmail = (rule, value, callback) => {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (value && !emailRegex.test(value)) {
-        callback(new Error('请输入有效的邮箱地址'));
-      } else {
-        callback();
-      }
-    };
-
-    // 自定义验证器：验证delivery只能是0或1
-    const validateDelivery = (rule, value, callback) => {
-      if (value !== 0 && value !== 1) {
-        callback(new Error('配送员状态只能是0或1'));
-      } else {
-        callback();
-      }
-    };
-
     return {
       // 控制对话框显示/隐藏
       visible: false,
@@ -105,45 +73,38 @@ export default {
       // 添加窗口宽度跟踪
       windowWidth: window.innerWidth,
 
-      // 用户数据表单对象
+      // 品牌数据表单对象
       dataForm: {
-        id: 0,            // 用户ID
-        name: '',         // 用户名称
-        username: '',     // 用户账号
-        phone: '',        // 用户电话
-        email: '',        // 用户邮箱
-        address: '',      // 用户住址
-        delivery: 0,      // 是否是配送员 (0:否, 1:是)
-        permission: 0,    // 用户权限 (数值输入)
-        isUse: 1          // 是否启用 (0:未启用, 1:启用)
+        id: 0,            // 品牌ID
+        name: '',         // 品牌名称
+        log: '',          // 品牌Logo
+        description: '',   // 品牌说明
+        isRelease: 1,      // 是否发布，默认发布
+        firstLetter: '',   // 检索首字母
+        sort: 0            // 排序，默认0
       },
 
-      // 表单验证规则 - 验证所有字段
+      // 表单验证规则
       dataRule: {
         name: [
-          { required: true, message: '名称不能为空', trigger: 'change' }
+          { required: true, message: '品牌名称不能为空', trigger: 'blur' }
         ],
-        username: [
-          { required: true, message: '用户账号不能为空', trigger: 'blur' }
+        log: [
+          { required: false, message: '品牌Logo', trigger: 'blur' }
         ],
-        phone: [
-          { required: true, message: '电话不能为空', trigger: 'blur' },
-          // { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号码', trigger: 'blur' }
+        description: [
+          { required: false, message: '品牌说明', trigger: 'blur' }
         ],
-        email: [
-          { required: true, message: '邮箱不能为空', trigger: 'blur' },
-          { validator: validateEmail, trigger: 'blur' }
+        isRelease: [
+          { required: true, message: '是否发布不能为空', trigger: 'change' }
         ],
-        delivery: [
-          { required: true, message: '配送员状态不能为空', trigger: 'change' },
-          { validator: validateDelivery, trigger: 'change' }
+        firstLetter: [
+          { required: true, message: '检索首字母不能为空', trigger: 'blur' },
+          { pattern: /^[A-Z]$/, message: '检索首字母必须是单个大写字母', trigger: 'blur' }
         ],
-        permission: [
-          { required: true, message: '权限不能为空', trigger: 'blur' },
-          { type: 'number', message: '权限必须为数字', trigger: 'blur' }
-        ],
-        isUse: [
-          { required: true, message: '启用状态不能为空', trigger: 'change' }
+        sort: [
+          { required: true, message: '排序不能为空', trigger: 'blur' },
+          { type: 'number', message: '排序必须为数字', trigger: 'blur' }
         ]
       }
     }
@@ -180,29 +141,44 @@ export default {
     },
 
     /**
-     * 初始化对话框
-     * @param {Number} id - 用户ID
+     * 初始化修改对话框
+     * @param {Number} id - 要修改的品牌ID
      */
     init(id) {
-      // 设置用户ID并显示对话框
-      this.dataForm.id = id || 0
-      this.visible = true
+      if (!id) {
+        this.$message.error('未指定要修改的品牌ID');
+        return;
+      }
+
+      // 设置品牌ID并显示对话框
+      this.dataForm.id = id;
+      this.visible = true;
 
       // 使用nextTick等待DOM更新后再加载数据
       this.$nextTick(() => {
         // 重置表单数据
-        this.resetForm()
+        this.resetForm();
 
-        // 如果有ID，则获取用户信息
-        if (this.dataForm.id) {
-          // 发送请求获取用户详细信息
-          this.$http.get(`/data/snack_platform/user/info/${this.dataForm.id}`).then((data) => {
-            if (data && data.code === 200) {
-              console.log("===========================", data)
-              this.dataForm = data.data.user; // 填充表单数据
-            }
-          })
+        // 加载品牌详细信息
+        this.loadBrandInfo(id);
+      });
+    },
+
+    /**
+     * 加载品牌详细信息
+     * @param {Number} id - 品牌ID
+     */
+    loadBrandInfo(id) {
+      this.$http.get(`/data/snack_platform/brand/info/${id}`).then((data) => {
+        if (data && data.code === 200) {
+          // 填充表单数据
+          this.dataForm = data.data;
+        } else {
+          this.$message.error(data?.msg || '获取品牌信息失败');
         }
+      }).catch(error => {
+        console.error('获取品牌信息失败:', error);
+        this.$message.error('获取品牌信息失败');
       });
     },
 
@@ -210,18 +186,19 @@ export default {
      * 重置表单数据为默认值
      */
     resetForm() {
-      // 手动重置表单数据，保留ID
+      // 记住原来的ID
+      const originalId = this.dataForm.id;
+
+      // 重置表单数据，保留ID
       this.dataForm = {
-        id: this.dataForm.id,
+        id: originalId,
         name: '',
-        username: '',
-        phone: '',
-        email: '',
-        address: '',
-        delivery: 0,
-        permission: 0,
-        isUse: 1
-      }
+        log: '',
+        description: '',
+        isRelease: 1,
+        firstLetter: '',
+        sort: 0
+      };
 
       // 如果表单引用存在，重置表单验证状态
       if (this.$refs.dataFormRef) {
@@ -244,25 +221,12 @@ export default {
       // 验证表单
       formRef.validate((valid) => {
         if (valid) {
-          // 提交所有字段（因为现在所有字段都可编辑）
-          const updateData = {
-            id: this.dataForm.id,
-            name: this.dataForm.name,
-            username: this.dataForm.username,
-            phone: this.dataForm.phone,
-            email: this.dataForm.email,
-            address: this.dataForm.address,
-            delivery: this.dataForm.delivery,
-            permission: this.dataForm.permission,
-            isUse: this.dataForm.isUse
-          }
-
           // 发送更新请求
-          this.$http.put('/data/snack_platform/user/update', updateData).then((data) => {
+          this.$http.put('/data/snack_platform/brand/update', this.dataForm).then((data) => {
             if (data && data.code === 200) {
-              // 更新成功提示
+              // 操作成功提示
               this.$message({
-                message: '操作成功',
+                message: '修改成功',
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
@@ -272,10 +236,13 @@ export default {
                 }
               })
             } else {
-              // 更新失败提示
-              this.$message.error(data?.msg || '操作失败')
+              // 操作失败提示
+              this.$message.error(data?.msg || '修改失败')
             }
-          })
+          }).catch(error => {
+            console.error('修改失败:', error);
+            this.$message.error('修改失败');
+          });
         }
       })
     }
@@ -289,7 +256,7 @@ export default {
   margin: 0 auto;       /* 水平居中对话框 */
 }
 
-/* 新增：外层居中容器 - 确保内部元素可靠地居中 */
+/* 外层居中容器 - 确保内部元素可靠地居中 */
 .dialog-center-container {
   width: 100%;
   display: flex;
@@ -310,19 +277,15 @@ export default {
 
 /* 紧凑型表单样式 - 控制表单大小并使其居中 */
 .compact-form {
-  width: 70%;           /* 将表单宽度设为70%，减少约三分之一 */
+  width: 80%;           /* 将表单宽度设为80%，稍微宽一些以容纳更多内容 */
   margin: 0 auto;       /* 水平居中 */
 }
 
 /* 控制输入框和下拉框宽度 - 使所有输入控件保持一致宽度 */
 .compact-form .el-input,
-.compact-form .el-select {
+.compact-form .el-select,
+.compact-form .el-switch {
   width: 100% !important; /* 强制应用宽度100% */
-}
-
-/* 特定短输入框样式 - 权限输入框专用小尺寸 */
-.short-input {
-  max-width: 6.25rem !important; /* 减小权限输入框宽度 */
 }
 
 /* 减小表单项间距 - 为错误提示留出适当空间但不过宽 */
@@ -376,7 +339,7 @@ export default {
 /* 自适应媒体查询 - 针对不同屏幕尺寸优化布局 */
 @media screen and (max-width: 768px) {
   .compact-form {
-    width: 85%;         /* 在中小屏幕上稍微加宽表单 */
+    width: 90%;         /* 在中小屏幕上稍微加宽表单 */
   }
 
   .el-form-item {

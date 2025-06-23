@@ -29,6 +29,7 @@ request.interceptors.request.use(config => {
 request.interceptors.response.use(response =>{
 
     let result = response.data;
+
     // 如果返回的是文件，就直接返回
     if(response.config.responseType === 'blob'){
         return result ;
